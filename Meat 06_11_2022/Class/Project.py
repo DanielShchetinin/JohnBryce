@@ -1,0 +1,1 @@
+print("You are", 2022 - int(input("Your birth year:")), "years old")
