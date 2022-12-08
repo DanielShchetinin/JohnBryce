@@ -1,0 +1,2 @@
+python ttc.py
+pause

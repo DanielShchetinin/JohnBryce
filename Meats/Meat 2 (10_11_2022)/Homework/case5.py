@@ -3,9 +3,9 @@ letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
 seats = input("Enter your seat number: ")
 if seats[0] not in letters:
-    print("Error")
+    print("Error1")
 if seats[1] not in numbers:
-    print("Error")
+    print("Error2")
 
 layout = int(input("Choose a layout variant from next list:\
 \n1. ABC-DEF\n2. ABC-DEFG-HIJ\n3. AB-CD-EF\n\nEnter your choose number: "))
@@ -16,7 +16,7 @@ if layout == 2:
 if layout == 3:
     layoutChoose = 'AB-CD-EF'
 else:
-    print("Error")
+    print("Error3")
 
 if layout == 1 and seats[0] == 'A' or 'F':
     position = 'Window'

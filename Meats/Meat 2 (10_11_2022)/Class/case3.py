@@ -5,4 +5,4 @@
 
 text = input("Enter a text in format AB CDE FG: ")
 text1 = text.split(" ")
-print(len(text1[0])  text[2]))
+print(len(text1[0],  text[2]))
