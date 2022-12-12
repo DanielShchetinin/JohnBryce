@@ -1,9 +1,16 @@
-board_system = [[]]
+
+def board_system():
+    pass
+
+
 count = 1
-a = ' x '
+a = ' . '
 size = int(input("Enter a size: "))
 first = True
 sizenum = '   '
+
+for i in range(1, size+1):
+    hello = [1, 2, 3]
 
 def board(a, count, size, first, sizenum):
     board_1 = ("\n┏" + ((size-1) * "━━━┳") + "━━━┓")
