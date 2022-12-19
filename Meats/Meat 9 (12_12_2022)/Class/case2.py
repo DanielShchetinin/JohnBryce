@@ -7,20 +7,22 @@ class Person:
         self.phone_number = phone_number
         self.birth_year = birth_year
         
+        def getName(self):
+            return {first_name}
+            
         "self.age = age"
 
 def main():
     count_profiles = 0
-    
     first_person = False
-    
     profiles = []
+    profiles_dict = {}
     
     
-    mainMenu(first_person, count_profiles, profiles)
+    mainMenu(first_person, count_profiles, profiles, profiles_dict)
     
     
-def mainMenu(first_person, count_profiles, profiles):
+def mainMenu(first_person, count_profiles, profiles, profiles_dict):
     
     actions_profile = (
     "See information about this profile",
@@ -55,13 +57,13 @@ def mainMenu(first_person, count_profiles, profiles):
     
     if option == 1:
         if first_person == True:
-            for idx, profile in enumerate(profiles):
-                print(f"\n{idx+1}. {profiles[idx].first_name} {profiles[idx].last_name}.")
+            for idx, profile in enumerate(profiles_dict):
+                print(f"\n{idx+1}. {profiles_dict[213731102].first_name} {profiles_dict[213731102].last_name}.")
                 new_profile_idx = (idx+1)
             print(f"\n{new_profile_idx+1}. Create new profile.")
             choose_profile = int(input("\n--> Insert your choose action: "))
             if choose_profile == new_profile_idx+1:
-                createPerson(first_person, count_profiles, profiles)
+                createPerson(first_person, count_profiles, profiles, profiles_dict)
             if choose_profile == idx+1:
                 print('\n')
                 print(f"\n| ---------- Actions for {profiles[idx].first_name} {profiles[idx].last_name} ---------- |\n")
@@ -83,9 +85,9 @@ def mainMenu(first_person, count_profiles, profiles):
                     print(f"1. Exit")
                     action = int(input("--> Insert your choose action: "))
                     if action == 1:
-                        mainMenu(first_person, count_profiles, profiles)
+                        mainMenu(first_person, count_profiles, profiles, profiles_dict)
                 if action == 3:
-                    mainMenu(first_person, count_profiles, profiles)
+                    mainMenu(first_person, count_profiles, profiles, profiles_dict)
             
         if first_person == False:
             print("\n| ---------- Profile not found ---------- |")
@@ -95,14 +97,14 @@ def mainMenu(first_person, count_profiles, profiles):
             person_miss_option = int(input("--> Insert your choose action: "))
             if person_miss_option == 1:
                 first_person = True
-                createPerson(first_person, count_profiles, profiles)
+                createPerson(first_person, count_profiles, profiles, profiles_dict)
             if person_miss_option == 2:
-                mainMenu(first_person, count_profiles, profiles)
+                mainMenu(first_person, count_profiles, profiles, profiles_dict)
         
     if option == 2:
             stop()
 
-def createPerson(first_person, count_profiles, profiles):
+def createPerson(first_person, count_profiles, profiles, profiles_dict):
     print("\n| ---------- Create Person ---------- |:\n")
     while True:
         id = input("Enter your ID: ")
@@ -122,20 +124,20 @@ def createPerson(first_person, count_profiles, profiles):
         while True:
             agree = input("\n--> To Agree or Decline this informaton Enter [Agree or Decline]: ").title()
             if agree == "Agree":
-                profiles.append(id)
-                profiles[int(count_profiles)] = Person(id, first_name, last_name, addres, phone_number, birth_year)
-                print(f"\nProfile", profiles[int(count_profiles)].first_name, profiles[int(count_profiles)].last_name, "is been saved!")
+
+                profiles_dict[id] = Person(id, first_name, last_name, addres, phone_number, birth_year)
+                print(f"\nProfile", profiles_dict[id].first_name, "is been saved!")
                 count_profiles += 1
                 break
             if agree == "Decline":
-                createPerson(first_person, count_profiles, profiles)
+                createPerson(first_person, count_profiles, profiles, profiles_dict)
             if agree != "Agree" or agree != "Decline":
                 continue
             break
         break
-    mainMenu(first_person, count_profiles, profiles)
+    mainMenu(first_person, count_profiles, profiles, profiles_dict)
         
-def changeUserAge(first_person, count_profiles, profiles):
+def changeUserAge(first_person, count_profiles, profiles, profiles_dict):
     pass
 
 def stop():
