@@ -7,24 +7,22 @@ class Person:
         self.phone_number = phone_number
         self.birth_year = birth_year
         
-        self.age = None
-        
+        def getName(self):
+            return {first_name}
+            
+        "self.age = age"
 
 def main():
     count_profiles = 0
-    
     first_person = False
-    
     profiles = []
-    profile_numbers = None
-    
-    person_choosen = None
+    profiles_dict = {}
     
     
-    mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+    mainMenu(first_person, count_profiles, profiles, profiles_dict)
     
     
-def mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers):
+def mainMenu(first_person, count_profiles, profiles, profiles_dict):
     
     actions_profile = (
     "See information about this profile",
@@ -66,13 +64,13 @@ def mainMenu(first_person, count_profiles, profiles, person_choosen, profile_num
     
     if option == 1:
         if first_person == True:
-            for idx, profile in enumerate(profiles):
-                print(f"\n{idx+1}. {profiles[idx].first_name} {profiles[idx].last_name}.")
+            for idx, profile in enumerate(profiles_dict):
+                print(f"\n{idx+1}. {profiles_dict[213731102].first_name} {profiles_dict[213731102].last_name}.")
                 new_profile_idx = (idx+1)
             print(f"\n{new_profile_idx+1}. Create new profile.")
             choose_profile = int(input("\n--> Insert your choose action: "))
             if choose_profile == new_profile_idx+1:
-                createPerson(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                createPerson(first_person, count_profiles, profiles, profiles_dict)
             if choose_profile == idx+1:
                 print('\n')
                 print(f"\n| ---------- Actions for {profiles[idx].first_name} {profiles[idx].last_name} ---------- |\n")
@@ -96,6 +94,8 @@ def mainMenu(first_person, count_profiles, profiles, person_choosen, profile_num
                     print(f"1. Exit")
                     action = int(input("--> Insert your choose action: "))
                     if action == 1:
+                        
+                        
                         mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
                 
                 if action == 2:  
@@ -103,7 +103,10 @@ def mainMenu(first_person, count_profiles, profiles, person_choosen, profile_num
                     changeUserInfo(first_person, count_profiles, profiles, person_choosen, profile_numbers)
                         
                 if action == 3:
-                    mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                    mainMenu(first_person, count_profiles, profiles, profiles_dict)
+                if action == 3:
+                    mainMenu(first_person, count_profiles, profiles, profiles_dict)
+
             
         if first_person == False:
             print("\n| ---------- Profile not found ---------- |")
@@ -116,6 +119,10 @@ def mainMenu(first_person, count_profiles, profiles, person_choosen, profile_num
                 createPerson(first_person, count_profiles, profiles, person_choosen, profile_numbers)
             if person_miss_option == 2:
                 mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                createPerson(first_person, count_profiles, profiles, profiles_dict)
+            if person_miss_option == 2:
+                mainMenu(first_person, count_profiles, profiles, profiles_dict)
+
         
     if option == 2:
             stop()
