@@ -1,2 +1,2 @@
-python case2.py
+python case3.py
 pause

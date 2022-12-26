@@ -1,3 +1,5 @@
+import datetime
+
 class Person:
     def __init__(self, id:int, first_name:str, last_name:str, addres:str, phone_number:list, birth_year:int):
         self.id = id
@@ -5,24 +7,24 @@ class Person:
         self.last_name = last_name
         self.addres = addres
         self.phone_number = phone_number
-        self.birth_year = birth_year
+        self.birth_year = int(birth_year)
         
-        def getName(self):
-            return {first_name}
-            
-        "self.age = age"
-
+        
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+    
+    def get_age(self):
+        return datetime.date.today().year - self.birth_year
+    
 def main():
     count_profiles = 0
     first_person = False
-    profiles = []
     profiles_dict = {}
     
+    mainMenu(first_person, count_profiles, profiles_dict)
     
-    mainMenu(first_person, count_profiles, profiles, profiles_dict)
     
-    
-def mainMenu(first_person, count_profiles, profiles, profiles_dict):
+def mainMenu(first_person, count_profiles, profiles_dict):
     
     actions_profile = (
     "See information about this profile",
@@ -52,28 +54,25 @@ def mainMenu(first_person, count_profiles, profiles, profiles_dict):
     print("\n| ---------- Avaliable actions ---------- |:\n")
     print(option_list)
     print('\n')
-    
-    #tester
-    # first_person = True
-    # profiles.append(213731102)
-    # profiles[0]  = Person(213731102, "Daniel", "Nuger", "Ashdod", 972537200511, 2002)
-    # count_profiles += 1
-
 
     option = int(input("--> Insert your choose action: "))
     
+    idx = 0
     if option == 1:
         if first_person == True:
-            for idx, profile in enumerate(profiles_dict):
-                print(f"\n{idx+1}. {profiles_dict[213731102].first_name} {profiles_dict[213731102].last_name}.")
-                new_profile_idx = (idx+1)
-            print(f"\n{new_profile_idx+1}. Create new profile.")
-            choose_profile = int(input("\n--> Insert your choose action: "))
-            if choose_profile == new_profile_idx+1:
-                createPerson(first_person, count_profiles, profiles, profiles_dict)
+            for key in (profiles_dict):
+                print(f"\n{idx+1}. {profiles_dict[key].get_full_name()} [ID = {profiles_dict[key].id}].")
+                idx += 1
+            print(f"\n{idx+1}. Create new profile.")
+            choose_profile = int(input(f"\n--> Insert ID for action or [{idx+1}] for create: "))
             if choose_profile == idx+1:
+                createPerson(first_person, count_profiles, profiles_dict)
+            choose_profile = str(choose_profile)
+            if choose_profile not in profiles_dict.keys() or not idx+1:
+                mainMenu(first_person, count_profiles, profiles_dict)
+            if choose_profile in profiles_dict.keys():
                 print('\n')
-                print(f"\n| ---------- Actions for {profiles[idx].first_name} {profiles[idx].last_name} ---------- |\n")
+                print(f"\n| ---------- Actions for {profiles_dict[key].get_full_name()} ---------- |\n")
                 print(actions_profile)
                 print('\n')
                 
@@ -82,30 +81,25 @@ def mainMenu(first_person, count_profiles, profiles, profiles_dict):
         
                 if action == 1:
                     print("\n")
-                    print(f"ID: {profiles[idx].id}")
-                    print(f"First name: {profiles[idx].first_name}")
-                    print(f"Last name : {profiles[idx].last_name}")
-                    print(f"Addres: {profiles[idx].addres}")
-                    print(f"Birth year: {profiles[idx].birth_year}")
-                    print(f"Age: {profiles[idx].age}")
+                    print(f"ID: {profiles_dict[choose_profile].id}")
+                    print(f"First name: {profiles_dict[choose_profile].first_name}")
+                    print(f"Last name : {profiles_dict[choose_profile].last_name}")
+                    print(f"Addres: {profiles_dict[choose_profile].addres}")
+                    print(f"Age: {profiles_dict[choose_profile].get_age()}")
                     print("\n")
-                    print(f"Phone number: {profiles[idx].phone_number}")
+                    print(f"Phone number(s): {profiles_dict[choose_profile].phone_number}")
                     print("\n")
                     print(f"1. Exit")
                     action = int(input("--> Insert your choose action: "))
                     if action == 1:
-                        
-                        
-                        mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                        mainMenu(first_person, count_profiles, profiles_dict)
                 
-                if action == 2:  
-                    person_choosen = idx    
-                    changeUserInfo(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                if action == 2:
+                    pass
+                    # changeUserInfo(first_person, count_profiles, person_choosen)
                         
                 if action == 3:
-                    mainMenu(first_person, count_profiles, profiles, profiles_dict)
-                if action == 3:
-                    mainMenu(first_person, count_profiles, profiles, profiles_dict)
+                    mainMenu(first_person, count_profiles, profiles_dict)
 
             
         if first_person == False:
@@ -116,18 +110,18 @@ def mainMenu(first_person, count_profiles, profiles, profiles_dict):
             person_miss_option = int(input("--> Insert your choose action: "))
             if person_miss_option == 1:
                 first_person = True
-                createPerson(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                createPerson(first_person, count_profiles, profiles_dict)
             if person_miss_option == 2:
-                mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
-                createPerson(first_person, count_profiles, profiles, profiles_dict)
+                mainMenu(first_person, count_profiles, profiles_dict)
+                createPerson(first_person, count_profiles, profiles_dict)
             if person_miss_option == 2:
-                mainMenu(first_person, count_profiles, profiles, profiles_dict)
+                mainMenu(first_person, count_profiles, profiles_dict)
 
         
     if option == 2:
             stop()
 
-def createPerson(first_person, count_profiles, profiles, person_choosen, profile_numbers):
+def createPerson(first_person, count_profiles, profiles_dict):
     print("\n| ---------- Create Person ---------- |:\n")
     while True:
         id = input("Enter your ID: ")
@@ -146,45 +140,44 @@ def createPerson(first_person, count_profiles, profiles, person_choosen, profile
         print(f"Birth year: {birth_year}")
         while True:
             agree = input("\n--> To Agree or Decline this informaton Enter [Agree or Decline]: ").title()
-            if agree == "Agree":
-                profiles.append(id)                
-                profiles[int(count_profiles)] = Person(id, first_name, last_name, addres, phone_number, birth_year)
-                print(f"\nProfile", profiles[int(count_profiles)].first_name, profiles[int(count_profiles)].last_name, "is been saved!")
+            if agree == "Agree":             
+                profiles_dict[id] = Person(id, first_name, last_name, addres, phone_number, birth_year)
+                print(f"\nProfile", profiles_dict[id].get_full_name(), "is been saved!")
                 count_profiles += 1
                 break
             if agree == "Decline":
-                createPerson(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+                createPerson(first_person, count_profiles, profiles_dict)
             if agree != "Agree" or agree != "Decline":
                 continue
             break
         break
-    mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+    mainMenu(first_person, count_profiles, profiles_dict)
         
-def changeUserInfo(first_person, count_profiles, profiles, person_choosen, profile_numbers):
-    changeOptions_list = (
-    "Change Age",
-    "Add Number",
-    "Delete Number"
-    )
-    changeOptions = "\n".join([f"{inx + 1}. {act}" for inx, act in enumerate(changeOptions_list)])
+# def changeUserInfo(first_person, count_profiles, profiles, person_choosen, profile_numbers):
+#     changeOptions_list = (
+#     "Change Age",
+#     "Add Number",
+#     "Delete Number"
+#     )
+#     changeOptions = "\n".join([f"{inx + 1}. {act}" for inx, act in enumerate(changeOptions_list)])
     
     
-    print('\n')
-    print(changeOptions)
-    print('\n')
-    changeChoose = int(input("--> Insert your choose action: "))
+#     print('\n')
+#     print(changeOptions)
+#     print('\n')
+#     changeChoose = int(input("--> Insert your choose action: "))
     
-    if changeChoose == 1:
-        new_age = int(input(f"\n--> Insert a new Age for {profiles[person_choosen].first_name} {profiles[person_choosen].last_name}: "))
-        profiles[person_choosen].age = new_age
-        mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+#     if changeChoose == 1:
+#         new_age = int(input(f"\n--> Insert a new Age for {profiles[person_choosen].first_name} {profiles[person_choosen].last_name}: "))
+#         profiles[person_choosen].age = new_age
+#         mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
 
-    # if changeChoose == 2:
-    #     print(profile_numbers)
+#     if changeChoose == 2:
+#         print(profile_numbers)
         
-    #     new_age = int(input(f"\n--> Insert a new Age for {profiles[person_choosen].first_name} {profiles[person_choosen].last_name}: "))
-    #     profiles[person_choosen].age = new_age
-    #     mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
+#         new_age = int(input(f"\n--> Insert a new Age for {profiles[person_choosen].first_name} {profiles[person_choosen].last_name}: "))
+#         profiles[person_choosen].age = new_age
+#         mainMenu(first_person, count_profiles, profiles, person_choosen, profile_numbers)
         
 def stop():
     print("\n"*25, "Programm is been stopped!\n\n")
