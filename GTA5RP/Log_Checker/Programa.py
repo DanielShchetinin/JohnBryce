@@ -1,3 +1,4 @@
+frac_choosed = "EMS"
 space_visual = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 frac_choosed = None
 def main(frac_choosed):
@@ -26,7 +27,7 @@ def main(frac_choosed):
             print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n| ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |")
             print("| ━━━━━━ Обработка логов, Ожидайте ━━━━━ |")
             print("| ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |\n\n\n\n\n\n")
-            log_checker_system()
+            log_checker_system(frac_choosed)
         if frac_choosed == "Ошибка, Введите верную фракцию" or frac_choosed == "Не выбрано":
             print(space_visual, "Для начала проверки логов - Выберите фракцию!")
             main(frac_choosed)
@@ -193,6 +194,8 @@ def read_armour_file(filename):
     armour_log = []
     with open(filename, 'r', encoding='utf-8') as file:
         for line in file:
+            if "ПП" in line:
+                continue
             if line == " " or line == "\t":
                 continue
             log = line.strip().split("\t")
@@ -209,22 +212,23 @@ def read_familiy_file(filename):
             familiy_log.append((log))
     return familiy_log
 
-frac_names = read_names_file('names.txt')
-warned_names = check_warn_names('names.txt')
-leave_names = check_leave_names('names.txt')
-vip_leave_names = check_vip_leave_names('names.txt')
-car_log = read_car_file('cars.txt')
-apartament_log = read_apartament_file('apartament.txt')
-home_log = read_home_file('home.txt')
-armour_log = read_armour_file('armour.txt')
-familiy_log = read_familiy_file('familiy.txt')
+frac_names = read_names_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\names.txt')
+warned_names = check_warn_names(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\names.txt')
+leave_names = check_leave_names(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\names.txt')
+vip_leave_names = check_vip_leave_names(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\names.txt')
+car_log = read_car_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\cars.txt')
+apartament_log = read_apartament_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\apartament.txt')
+home_log = read_home_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\home.txt')
+armour_log = read_armour_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\armour.txt')
+familiy_log = read_familiy_file(r'c:\Users\d1175\Documents\GitHub\JohnBryce\GTA5RP\Log_Checker\familiy.txt')
 
-def log_checker_system():
+def log_checker_system(frac_choosed):
     apartament_per_name = {}
     cars_per_name = {}
     armour_per_name = {}
     home_per_name = {}
     familiy_per_name = {}
+    aidkit_name = {}
     
     matched_names = []
     not_matched_names = []
@@ -235,8 +239,11 @@ def log_checker_system():
             armour_per_name[name] = []
             home_per_name[name] = []
             familiy_per_name[name] = []
+            aidkit_name[name] = []
             
         for log in car_log:
+            if "Аптечка ПП" in log:
+                    continue
             if len(log[1].split(" ")) != 2:
                 continue
             if len(log[1].split(" ")) == 2:
@@ -251,6 +258,8 @@ def log_checker_system():
                         matched_names.append(name)
                         
         for log in apartament_log:
+            if "Аптечка ПП" in log:
+                    continue
             if len(log[1].split(" ")) != 2:
                 continue
             if len(log[1].split(" ")) == 2:
@@ -263,32 +272,55 @@ def log_checker_system():
                     apartament_per_name[name].append(log)
                     if name not in matched_names:
                         matched_names.append(name)
-                    
-        for log in armour_log:
-            if len(log[1].split(" ")) != 2:
+        
+        if frac_choosed != "EMS":
+            for log in armour_log:
+                if len(log[1].split(" ")) != 2:
+                    continue
+                if len(log[1].split(" ")) == 2:
+                    log[1] = log[1].split(" ")
+                    static = log[1][1]
+                    log[1] = log[1][0]
+                    name_for_match = log[1]
+                    log[1] = log[1] + " " + static
+                    if name == name_for_match:
+                        armour_per_name[name].append(log)
+                        if name not in matched_names:
+                            matched_names.append(name)
+                if len(log[2].split(" ")) == 2:
+                    log[2] = log[2].split(" ")
+                    static = log[2][1]
+                    log[2] = log[2][0]
+                    name_for_match = log[2]
+                    log[2] = log[2] + " " + static
+                    if name == name_for_match:
+                        armour_per_name[name].append(log)
+                        if name not in matched_names:
+                            matched_names.append(name)
+        
+        if frac_choosed == "EMS":  
+            for log in armour_log:
+                if len(log[1].split(" ")) != 2:
+                    continue
+                if log[-3] == "Аптечка ПП":
+                    continue
+                if log[-3] == "Аптечка":
+                    if len(log[1].split(" ")) == 2:
+                        log[1] = log[1].split(" ")
+                        static = log[1][1]
+                        log[1] = log[1][0]
+                        name_for_match = log[1]
+                        log[1] = log[1] + " " + static
+                        if name == name_for_match:
+                            aidkit_name[name].append(log)
+                            if name not in matched_names:
+                                matched_names.append(name)
+            else: 
                 continue
-            if len(log[1].split(" ")) == 2:
-                log[1] = log[1].split(" ")
-                static = log[1][1]
-                log[1] = log[1][0]
-                name_for_match = log[1]
-                log[1] = log[1] + " " + static
-                if name == name_for_match:
-                    armour_per_name[name].append(log)
-                    if name not in matched_names:
-                        matched_names.append(name)
-            if len(log[2].split(" ")) == 2:
-                log[2] = log[2].split(" ")
-                static = log[2][1]
-                log[2] = log[2][0]
-                name_for_match = log[2]
-                log[2] = log[2] + " " + static
-                if name == name_for_match:
-                    armour_per_name[name].append(log)
-                    if name not in matched_names:
-                        matched_names.append(name)
                         
         for log in familiy_log:
+            if "Аптечка ПП" in log:
+                    continue
             if len(log[1].split(" ")) != 2:
                 continue
             if len(log[1].split(" ")) == 2:
@@ -303,6 +335,8 @@ def log_checker_system():
                         matched_names.append(name)
                         
         for log in home_log:
+            if "Аптечка ПП" in log:
+                    continue
             if len(log[1].split(" ")) == 2:
                 log[1] = log[1].split(" ")
                 static = log[1][1]
@@ -322,7 +356,7 @@ def log_checker_system():
             not_matched_names.append(name)
         
         
-    with open('result.txt', 'a', encoding='utf-8') as f:
+    with open(frac_choosed+'.txt', 'a', encoding='utf-8') as f:
         for name in matched_names:
             f.write("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
             
@@ -375,6 +409,11 @@ def log_checker_system():
                 for log in armour_per_name[name]:
                     f.write(' '.join(log))
                     f.write("\n")
+            if len(aidkit_name[name]) != 0:
+                f.write("\nАптечка:\n")
+                for log in aidkit_name[name]:
+                    f.write(' '.join(log))
+                    f.write("\n")
         f.write("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     for name in matched_names:
@@ -424,6 +463,10 @@ def log_checker_system():
         if len(armour_per_name[name]) != 0:
             print("\nБроня:\n")
             for log in armour_per_name[name]:
+                print(' '.join(log))
+        if len(aidkit_name[name]) != 0:
+            print("\nАптечка:\n")
+            for log in aidkit_name[name]:
                 print(' '.join(log))
         
         

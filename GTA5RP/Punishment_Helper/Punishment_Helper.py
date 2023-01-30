@@ -15,28 +15,28 @@ while True:
     if nakazanie_choose == 1:
         print(space_visual)
         print(nick, "Добавлен в список наказание!\n")
-        with open('result.txt', 'a', encoding='utf-8') as f:
+        with open('Punishment.txt', 'a', encoding='utf-8') as f:
             f.write(f"\noffprison {nick} 240 4.13 правила проекта // By Gyro\n")
             f.write(f"offwarn {nick} 4.13 правила проекта // By Gyro")
         
     if nakazanie_choose == 2:
         print(space_visual)
         print(nick, "Добавлен в список наказание!\n")
-        with open('result.txt', 'a', encoding='utf-8') as f:
+        with open('Punishment.txt', 'a', encoding='utf-8') as f:
             f.write(f"\noffprison {nick} 240 1.6 правила гос. структур // By Gyro\n")
             f.write(f"offwarn {nick} 1.6 правила гос. структур // By Gyro")
         
     if nakazanie_choose == 3:
         print(space_visual)
         print(nick, "Добавлен в список наказание!\n")
-        with open('result.txt', 'a', encoding='utf-8') as f:
+        with open('Punishment.txt', 'a', encoding='utf-8') as f:
             f.write(f"\noffprison {nick} 240 1.7 правила гос. структур // By Gyro\n")
             f.write(f"offwarn {nick} 1.7 правила гос. структур // By Gyro")
         
     if nakazanie_choose == 4:
         print(space_visual)
         print(nick, "Добавлен в список наказание!\n")
-        with open('result.txt', 'a', encoding='utf-8') as f:
+        with open('Punishment.txt', 'a', encoding='utf-8') as f:
             f.write(f"\noffprison {nick} 240 1.6.1 правила гос. структур // By Gyro\n")
             f.write(f"offwarn {nick} 1.6.1 правила гос. структур // By Gyro")
             
