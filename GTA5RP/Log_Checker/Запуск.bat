@@ -1,2 +1,0 @@
-python Programa.py
-pause
