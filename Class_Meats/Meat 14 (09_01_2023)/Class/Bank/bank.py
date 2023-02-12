@@ -11,7 +11,7 @@ class Bank:
         self._branches: dict[int, Branch] = {}
         
         self._customers: dict[int, Customer] = {}
-        self._accounts: dict[int, BankAccount] = {name}
+        self._accounts: dict[int, BankAccount] = {}
         
         self._account2customers: dict[int, set[Customer]] = {}
         self._customer2accounts: dict[int, set[BankAccount]] = {}
@@ -99,11 +99,3 @@ if __name__ == "__main__":
     
     bank.add_customer(1, "213731102", "Daniel", "Shchetinin", "0537200511", Address("Israel", "Ashdod", "Kineret", 123456, 116), 7500)
     bank.add_customer(2, "213731103", "Vadim", "Shchetinin", "0537200512", Address("Israel", "Ashdod", "Kineret", 123456, 116), 7505)
-    
-    bank.create_account(1, 1, (1,2))
-    
-    
-    
-    # print(new_customer, new_customer.get_customer_salary())
-    # new_customer.set_customer_salary(10000)
-    # print(new_customer, new_customer.get_customer_salary())

@@ -1,10 +1,10 @@
 class Book:
     
-    def __init__(self, book_id: int, book_name: str, book_autor: str, published_year: int, book_type: int = 3):
+    def __init__(self, book_id: int, book_name: str, book_author: str, published_year: int, book_type: int = 3):
         
         self._book_id = book_id
         self._book_name = book_name
-        self._book_autor = book_autor
+        self._book_author = book_author
         self._published_year = published_year
         self._book_type = book_type
         
@@ -14,8 +14,8 @@ class Book:
     def get_book_name(self):
         return self._book_name
         
-    def get_book_autor(self):
-        return self._book_autor
+    def get_book_author(self):
+        return self._book_author
     
     def get_book_publish_year(self):
         return self._published_year
@@ -27,4 +27,4 @@ class Book:
         self._book_type = new_book_type
         
     def __str__(self):
-        return f"Book ID: {self._book_id}, Name: `{self._book_name}` by {self._book_autor}."
+        return f"[{self._book_id}] Book name: `{self._book_name}`. Author: {self._book_author}."
