@@ -43,14 +43,14 @@ visual_customers_name = f'{visual_space}\n| ━━━━━━━━━━━━
 
 # Books menu visual aspects
 
-books_menu_options = ["Add Book", "Delete Book", "Find Book By Name | NOT WORK", "Find Book By AutoR | NOT WORK", "Display all books ", "Return to Library Menu"]
+books_menu_options = ["Add Book", "Delete Book", "Find Book By Name | NOT WORK", "Find Book By Author | NOT WORK", "Display all books ", "Return to Library Menu"]
 books_menu = "\n".join([f"| {inx+1}. {opt}" for inx, opt in enumerate(books_menu_options)]) 
 
 visual_book_menu = f'\n| ━━━━━━━━━━━━ Books Menu ━━━━━━━━━━━━ |\n\n'
 visual_creating_book = f'{visual_space}\n| ━━━━━━━━━━━━ Creating Book ━━━━━━━━━━━━ |\n\n'
 visual_books_list = f'{visual_space}\n| ━━━━━━━━━━━━ Books list ━━━━━━━━━━━━ |\n\n'
 visual_books_delete = f'{visual_space}\n| ━━━━━━━━━━━━ Delete Books ━━━━━━━━━━━━ |\n\n'
-
+visual_books_full = f'{visual_space}\n| ━━━━━━━━━━━━ Full Information ━━━━━━━━━━━━ |\n\n'
 
 books_list_options = ["Open full information By ID", "Return to Book Menu"]
 books_list_menu = "\n".join([f"| {inx+1}. {opt}" for inx, opt in enumerate(books_list_options)]) 

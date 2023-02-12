@@ -32,6 +32,14 @@ class Library:
         with open(DB_URL, "wb") as file:
             pickle.dump(library, file)
             file.close
+            
+    @staticmethod
+    def load_from_pickle():
+        with open(DB_URL, "rb") as file:
+                library:Library = pickle.load(file)
+                file.close
+        return library            
+    
 
     # Create func`s
 
@@ -74,7 +82,7 @@ class Library:
         return self._books
     
     def get_customer_full_info(self, customer_id):
-        print("c ID:", customer_id)
+        print("Customer ID:", customer_id)
         print("Full Name:", self._customers[customer_id].get_customer_full_name())
         print("Email:", self._customers[customer_id].get_customer_email())
         print("Full Address:", self._customers[customer_id].get_customer_address())
@@ -92,6 +100,16 @@ class Library:
         for customer_id, customer in self._customers.items():
             if customer._customer_first_name == name:
                 result.append(customer)
+        return result
+    
+    def get_book_by_id(self, book_id):
+        return self._books.get(book_id)
+    
+    def get_customer_by_name(self, author_name) -> list[Book]:
+        result = []
+        for book_id, book in self._books.items():
+            if book.get_book_author == author_name:
+                result.append(book)
         return result
     
     # Update func`s
@@ -423,10 +441,8 @@ def goto_customer_menu():
     if customer_menu_choose == "1":
         try:
             
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
-        
+            library = Library.load_from_pickle()
+
             print(visual_creating_customer)
             id_of_customer = input("| Please enter ID of Customer: ")
             if not id_of_customer.isdigit():
@@ -519,9 +535,7 @@ def goto_customer_menu():
     if customer_menu_choose == "3":
         try:
         
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
             customers_list = library.get_customers_dict()
             if len(customers_list) == 0:
                 print(visual_space)
@@ -761,6 +775,46 @@ def goto_book_menu():
             print(error_message)
             goto_book_menu()    
         
+    if books_menu_choose == "3":
+        try:
+        
+            library = Library.load_from_pickle()
+            books_list = library.get_book_dict()
+            if len(books_list) == 0:
+                print(visual_space)
+                print("No Books for display!")
+                goto_customer_menu()
+            print(visual_space)
+            print(visual_books_full)
+            book_id = input("| Enter ID to get information about the book: ")
+            if not book_id.isdigit():
+                print(visual_space)
+                print("Error")
+                goto_customer_menu()
+            book_id = int(book_id)
+            if book_id not in books_list:
+                print(visual_space)
+                print("Error, ID not exist.")
+                goto_customer_menu()
+            print(visual_space)
+            print(visual_books_full)
+            library.get_book_full_info(book_id)
+            return_menu = input("\n| Enter [1] to return to the customer menu: ")
+            if not return_menu.isdigit():
+                print(visual_space)
+                print("Error")
+                goto_customer_menu()
+            if return_menu == "1":
+                print(visual_space)
+                goto_customer_menu()
+                
+        except Exception as error_message:
+            print(error_message)
+            goto_customer_menu()
+    
+    if books_menu_choose == "4":
+        pass 
+        
     if books_menu_choose == "5":
         try:
         
@@ -792,7 +846,7 @@ def goto_book_menu():
                 
             if books_list_choose == "1":
                 print(visual_space)
-                print(visual_customers_full)
+                print(visual_books_full)
                 book_id = input("| Enter ID to get information about the Book: ")
                 if not book_id.isdigit():
                     print(visual_space)
@@ -804,7 +858,7 @@ def goto_book_menu():
                     print("Error, ID not exist.")
                     goto_book_menu()
                 print(visual_space)
-                print(visual_customers_full)
+                print(visual_books_full)
                 library.get_book_full_info(book_id)
                 return_menu = input("\n| Enter [1] to return to the books menu: ")
                 if not return_menu.isdigit():

@@ -16,7 +16,7 @@ class Address:
     
     def get_full_address(self):
         return f"\nCountry: {self._country}.\nCity: {self._city}.\nStreet: {self._street}.\
-                \n\nbuilding_number: {self._building_number}.\n.\n"
+                \n\nbuilding_number: {self._building_number}.\n\n"
 
     @staticmethod
     def create_address_for_library():
