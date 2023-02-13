@@ -54,3 +54,10 @@ visual_books_full = f'{visual_space}\n| ━━━━━━━━━━━━ Ful
 
 books_list_options = ["Open full information By ID", "Return to Book Menu"]
 books_list_menu = "\n".join([f"| {inx+1}. {opt}" for inx, opt in enumerate(books_list_options)]) 
+
+
+# Loan menu visual aspects
+loan_menu_options = ["Make New Loan", "Return Loan", "Display loans history by customer ID", "Display loans history by book ID", "Display all active loans", "Display all loans history", "Return to Library Menu"]
+loan_menu = "\n".join([f"| {inx+1}. {opt}" for inx, opt in enumerate(loan_menu_options)])
+
+visual_loan_menu = f'\n| ━━━━━━━━━━━━ Loan Menu ━━━━━━━━━━━━ |\n\n'

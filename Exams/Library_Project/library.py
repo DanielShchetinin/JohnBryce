@@ -105,7 +105,7 @@ class Library:
     def get_book_by_id(self, book_id):
         return self._books.get(book_id)
     
-    def get_customer_by_name(self, author_name) -> list[Book]:
+    def get_book_by_name(self, author_name) -> list[Book]:
         result = []
         for book_id, book in self._books.items():
             if book.get_book_author == author_name:
@@ -131,7 +131,7 @@ class Library:
         else:
             return False
     
-    def delete_customer(self, book_id):
+    def delete_book(self, book_id):
         if book_id in self._books:
             self._books.pop(book_id)
             return True
@@ -299,6 +299,10 @@ def goto_library_menu():
         print(visual_space)
         goto_book_menu()
         
+    if library_menu_choose == "3":
+        print(visual_space)
+        goto_loan_menu()
+        
     if library_menu_choose == "4":
         try:
             with open(DB_URL, "rb") as file:
@@ -392,6 +396,7 @@ def goto_library_menu():
             except Exception as error_message:
                 print(error_message)
                 goto_library_menu()
+
 
         if settings_menu_choose == "4":
             print(visual_space) 
@@ -880,6 +885,13 @@ def goto_book_menu():
     if books_menu_choose == "6":
         print(visual_space)
         goto_library_menu()
+        
+def goto_loan_menu():
+    print(visual_loan_menu)
+    print(loan_menu)
+    print('\n')
+    loan_menu_choose = input(enter_choose)
+    
         
 if __name__ == "__main__":
     print(visual_space)

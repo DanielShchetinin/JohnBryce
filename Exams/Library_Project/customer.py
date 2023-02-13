@@ -30,9 +30,7 @@ class Customer:
         customer = self._birth_date
         formating = datetime.datetime.strptime(customer, "%d.%m.%Y")
         age = today.year - formating.year - ((today.month, today.day) < (formating.month, formating.day))
-        return age 
-
-        
+        return age
 
     def __str__(self):
         return f"[{self._customer_id}] {self.get_customer_full_name()}, {self.get_customer_age()}, {self.get_customer_address().get_city()}."
