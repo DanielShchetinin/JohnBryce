@@ -12,9 +12,20 @@ class Loan:
         
         self.loan_list: dict [int, list] = {}
         
+    def get_loan_list(self):
+        return self.loan_list
+        
     def loan_book(self, customer_id, book_id):
-        if book_id in self.loan_list.items():
+        if customer_id in self.loan_list.keys():
+            if len(self.loan_list[customer_id]) > 3:
+                return False
+        if book_id in self.loan_list[customer_id]:
             return False
         if customer_id in self.loan_list.keys():
-            self.loan_list[customer_id].append(book_id)
-        
+            if len(self.loan_list[customer_id]) > 3:
+                return False
+            else:
+                self.loan_list[customer_id].append(book_id)
+    
+    def loan_info(self):
+        return f"Customer ID: {self.customer_id}, Book ID: {self.book_id}, Loaned: {self.loan_date}, Return: {self.return_date}"

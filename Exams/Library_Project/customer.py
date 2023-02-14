@@ -19,6 +19,9 @@ class Customer:
     def get_customer_full_name(self):
         return f"{self._customer_first_name} {self._customer_last_name}"
     
+    def get_customer_half_info(self):
+        return f"[{self._customer_id}] {self._customer_first_name} {self._customer_last_name}"
+    
     def get_customer_address(self):
         return self._address
     

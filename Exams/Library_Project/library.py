@@ -56,6 +56,7 @@ class Library:
         self._books[book_id] = Book(book_id, book_name, book_autor, published_year, book_type)
         return True
     
+    def create_loan(self, customer_id: int, book_id: int, loan_date: datetime, return_date: datetime)
     # Read func`s
     
     def get_library(self): 
@@ -892,7 +893,65 @@ def goto_loan_menu():
     print('\n')
     loan_menu_choose = input(enter_choose)
     
-        
+    try:
+        if not loan_menu_choose.isdigit():
+            print(visual_space)
+            print("You cant use digits, Only numbers!")
+            goto_loan_menu()
+            
+        if loan_menu_choose not in ["1", "2", "3", "4", "5", "6", "7"]:
+            print(visual_space)
+            print("You can use only displayed options")
+            goto_loan_menu()
+            
+    except Exception as error_message:
+        print(error_message)
+        goto_loan_menu()    
+            
+    if loan_menu_choose == "1":
+        try:
+            
+            library = Library.load_from_pickle()
+            print(visual_space)
+            print(visual_creating_loan)
+            
+            customer_id = input("| Please enter Customer ID: ")
+            customer = library.get_customer_by_id(int(customer_id))
+            print(visual_space)
+            print(visual_creating_loan)
+            print(f"| Choosed Customer:", customer.get_customer_half_info(),"\n")
+            book_id = input("| Please enter Book ID: ")
+            book = library.get_book_by_id(int(book_id))
+            print(visual_space)
+            print(visual_creating_loan)
+            print(f"| Choosed Customer:", customer.get_customer_half_info())
+            print(f"| Choosed Book:", book.get_book_info())
+            loan_date = datetime.date.today()
+            print(f"| Loan Date:", datetime.date.strftime(loan_date, "%d.%m.%Y"))
+            return_date = None
+            if book.get_book_type() == "1":
+                return_date = loan_date + datetime.timedelta(days=10)
+            if book.get_book_type() == "2":
+                return_date = loan_date + datetime.timedelta(days=5)
+            if book.get_book_type() == "3":
+                return_date = loan_date + datetime.timedelta(days=2)
+            print(f"| Return Date:", datetime.date.strftime(return_date, "%d.%m.%Y"))
+            make_loan_choose = input(f"\n| Make new loan? [Y/N]: ")
+            if make_loan_choose == "N" or make_loan_choose == "n":
+                print(visual_space)
+                print("Loan Making is been canceled")
+                goto_loan_menu()
+            else:
+                loan = Loan(customer_id, book_id, return_date, loan_date)
+                loan.loan_book(customer_id, book_id)
+                loanlist = loan.get_loan_list()
+                print(loanlist[0])
+                
+        except Exception as error_message:
+            print(error_message)
+            goto_loan_menu()    
+            
+            
 if __name__ == "__main__":
     print(visual_space)
     main()

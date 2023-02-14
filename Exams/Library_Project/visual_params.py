@@ -61,3 +61,4 @@ loan_menu_options = ["Make New Loan", "Return Loan", "Display loans history by c
 loan_menu = "\n".join([f"| {inx+1}. {opt}" for inx, opt in enumerate(loan_menu_options)])
 
 visual_loan_menu = f'\n| ━━━━━━━━━━━━ Loan Menu ━━━━━━━━━━━━ |\n\n'
+visual_creating_loan = f'\n| ━━━━━━━━━━━━ Make Loan ━━━━━━━━━━━━ |\n\n'

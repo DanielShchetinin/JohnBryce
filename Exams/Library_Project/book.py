@@ -8,6 +8,9 @@ class Book:
         self._published_year = published_year
         self._book_type = book_type
         
+    def get_book_info(self):
+        return f"[{self._book_id}] Book: `{self._book_name}` Author: {self._book_author}"   
+        
     def get_book_id(self):
         return self._book_id
     
