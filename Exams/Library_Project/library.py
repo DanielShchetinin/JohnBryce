@@ -56,7 +56,8 @@ class Library:
         self._books[book_id] = Book(book_id, book_name, book_autor, published_year, book_type)
         return True
     
-    def create_loan(self, customer_id: int, book_id: int, loan_date: datetime, return_date: datetime)
+    def create_loan(self, customer_id: int, book_id: int, loan_date: datetime, return_date: datetime):
+        pass
     # Read func`s
     
     def get_library(self): 
