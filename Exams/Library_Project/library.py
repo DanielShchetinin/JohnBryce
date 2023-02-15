@@ -21,8 +21,9 @@ class Library:
         self._books: dict[int, Book] = {}
         self._customers: dict[int, Customer] = {}
         self._library: dict[str, Library] =  {}
-    
-    # Database Save System
+        self.loan_list: dict [int, list] = {}
+        
+    # Database System
     
     def save_library_to_dict(self, library):
         self._library["Library"] = library
@@ -56,8 +57,17 @@ class Library:
         self._books[book_id] = Book(book_id, book_name, book_autor, published_year, book_type)
         return True
     
-    def create_loan(self, customer_id: int, book_id: int, loan_date: datetime, return_date: datetime):
-        pass
+    def create_loan_book(self, customer_id, book_id, return_date, loan_date):
+        if customer_id in self.loan_list.keys():
+            if len(self.loan_list[customer_id]) > 3:
+                return False
+        if book_id in self.loan_list[customer_id]:
+            return False
+        if customer_id in self.loan_list.keys():
+            if len(self.loan_list[customer_id]) > 3:
+                return False
+            else:
+                self.loan_list[customer_id].append(book_id)
     # Read func`s
     
     def get_library(self): 
@@ -942,17 +952,22 @@ def goto_loan_menu():
                 print(visual_space)
                 print("Loan Making is been canceled")
                 goto_loan_menu()
-            else:
-                loan = Loan(customer_id, book_id, return_date, loan_date)
-                loan.loan_book(customer_id, book_id)
-                loanlist = loan.get_loan_list()
-                print(loanlist[0])
+            if make_loan_choose == "Y" or make_loan_choose == "y":
+                pass
+
                 
         except Exception as error_message:
             print(error_message)
             goto_loan_menu()    
             
+    if loan_menu_choose == "3":
+        try:
+            pass
             
+        except Exception as error_message:
+            print(error_message)
+            goto_loan_menu() 
+                
 if __name__ == "__main__":
     print(visual_space)
     main()
