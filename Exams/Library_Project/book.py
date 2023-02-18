@@ -31,3 +31,4 @@ class Book:
         
     def __str__(self):
         return f"[{self._book_id}] Book name: `{self._book_name}`. Author: {self._book_author}."
+    

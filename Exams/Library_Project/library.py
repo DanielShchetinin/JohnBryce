@@ -1,13 +1,14 @@
-import time
 import datetime
 import os
 import pickle
-from visual_params import *
-from exceptions import *
+import time
+
 from address import Address
 from book import Book
 from customer import Customer
+from exceptions import *
 from loan import Loan
+from visual_params import *
 
 DB_URL = "Exams\\Library_Project\\library_database.pickle"
 
@@ -18,10 +19,12 @@ class Library:
         self._library_name = library_name
         self._library_address = library_address
         
+        self._loans: dict[int, Loan] = {}
         self._books: dict[int, Book] = {}
         self._customers: dict[int, Customer] = {}
-        self._library: dict[str, Library] =  {}
-        self.loan_list: dict [int, list] = {}
+        self._library: dict[str, Library] = {}
+        self._loaned_for_customer: dict[int, list] = {}
+        self._loaned_books: list[int] = []
         
     # Database System
     
@@ -54,20 +57,17 @@ class Library:
     def add_book(self, book_id: int, book_name: str, book_autor: str, published_year: int, book_type: int = 3):
         if book_id in self._books:
             return False
-        self._books[book_id] = Book(book_id, book_name, book_autor, published_year, book_type)
+        book = Book(book_id, book_name, book_autor, published_year, book_type)
+        self._books[book_id] = book
         return True
     
-    def create_loan_book(self, customer_id, book_id, return_date, loan_date):
-        if customer_id in self.loan_list.keys():
-            if len(self.loan_list[customer_id]) > 3:
-                return False
-        if book_id in self.loan_list[customer_id]:
-            return False
-        if customer_id in self.loan_list.keys():
-            if len(self.loan_list[customer_id]) > 3:
-                return False
-            else:
-                self.loan_list[customer_id].append(book_id)
+    def create_loan_book(self, customer_id, book_id, return_date, loan_date, loan_status):
+        loan_id = int(book_id)
+        if customer_id not in self._loans:
+            loan = Loan(customer_id, book_id, return_date, loan_date, loan_status)
+            self._loans[loan_id] = loan
+
+            
     # Read func`s
     
     def get_library(self): 
@@ -93,19 +93,54 @@ class Library:
     def get_book_dict(self):
         return self._books
     
+    def get_loans_dict(self):
+        return self._loans
+    
     def get_customer_full_info(self, customer_id):
         print("Customer ID:", customer_id)
         print("Full Name:", self._customers[customer_id].get_customer_full_name())
         print("Email:", self._customers[customer_id].get_customer_email())
         print("Full Address:", self._customers[customer_id].get_customer_address())
-        print("Age:", self._customers[customer_id].get_customer_age())
+        print("Age:", self._customers[customer_id].get_customer_age(), "\n")
+        if len(self._loaned_for_customer[customer_id]) == 0:
+            print("No active loans for this Customer.")
+        else:
+            print("Active Loans:")
+        
+            loan:Loan = self._loans
+            for key in loan:
+                
+                loaned:Loan = loan[key]
+                customer_id = loaned.get_loaned_customer_id()
+                status = loaned.get_loaned_loan_status()
+                if int(customer_id) == int(customer_id) and status == "Loaned":
+                    book_id = loaned.get_loaned_book_id()
+                    book = self.get_book_by_id(int(book_id))
+                    book_author = book.get_book_author()
+                    loan_date = loaned.get_loaned_loan_date()
+                    loan_date = datetime.date.strftime(loan_date, "%d.%m.%Y")
+                    return_date_for_change = loaned.get_loaned_return_date()
+                    return_date = datetime.date.strftime(return_date_for_change, "%d.%m.%Y")
+                    if datetime.date.today() > return_date_for_change:
+                        status = "Expired"
+                    print(f"| Book: [{book_id}] `{book.get_book_name()}` by {book_author} | Loaned: {loan_date} Return: {return_date} | Status: {status}")
+        
+        
         
     def get_book_full_info(self, book_id):
         print("Book ID:", book_id)
         print("Book Name:", self._books[book_id].get_book_name())
         print("Book Author:", self._books[book_id].get_book_author())
         print("Book Publish Year:", self._books[book_id].get_book_publish_year())
-        print("Book Type:", self._books[book_id].get_book_type())
+        print("Book Type:", self._books[book_id].get_book_type(), "\n")
+        return_date = self._loans[int(book_id)].get_loaned_return_date()
+        if datetime.date.today() > return_date:
+            print("Status: Loan Expired")
+            return True
+        if int(book_id) in self._loaned_books:
+            print("Status: Loaned")
+            return True
+        else: print("Status: Not Loaned")
         
     def get_customer_by_name(self, name) -> list[Customer]:
         result = []
@@ -117,12 +152,79 @@ class Library:
     def get_book_by_id(self, book_id):
         return self._books.get(book_id)
     
-    def get_book_by_name(self, author_name) -> list[Book]:
+    def get_book_by_name(self, name):
         result = []
         for book_id, book in self._books.items():
-            if book.get_book_author == author_name:
+            if book._book_name == name:
                 result.append(book)
         return result
+    
+    def get_loan_by_id(self, loan_id):
+        return self._loans.get(int(loan_id))
+    
+    def get_book_by_author(self, author_name) -> list[Book]:
+        result = []
+        for book_id, book in self._books.items():
+            if book._book_author == author_name:
+                result.append(book)
+        return result
+    
+    def get_loans_for_customer(self):
+        return self._loaned_for_customer
+    
+    def get_loaned_books(self):
+        return self._loaned_books
+    
+    def get_loan_logs(self):
+        loans:Loan = self._loans
+        customer:Customer = self._customers
+        for key in loans:
+            loaned:Loan = loans[key]
+            status = loaned.get_loaned_loan_status()
+            
+            customer_id = loaned.get_loaned_customer_id()
+            customer = self.get_customer_by_id(int(customer_id))
+            customer_name = customer.get_customer_full_name()
+
+            book_id = loaned.get_loaned_book_id()
+            book = self.get_book_by_id(int(book_id))
+            book_name = book.get_book_name()
+            book_author = book.get_book_author()
+            
+            loan_date_for_change = loaned.get_loaned_loan_date()
+            loan_date = datetime.date.strftime(loan_date_for_change, "%d.%m.%Y")
+            return_date_for_change = loaned.get_loaned_return_date()
+            return_date = datetime.date.strftime(return_date_for_change, "%d.%m.%Y")
+            
+            if datetime.date.today() > return_date_for_change:
+                status = "Expired"
+            print(f"| Customer: [{customer_id}] {customer_name}. | Book: [{book_id}] `{book_name}` By Author: {book_author}. | Loan Date: {loan_date}, Return Date: {return_date} | Status: {status}")
+    
+    def get_late_loan_logs(self):
+        loans:Loan = self._loans
+        customer:Customer = self._customers
+        for key in loans:
+            loaned:Loan = loans[key]
+            status = loaned.get_loaned_loan_status()
+            
+            customer_id = loaned.get_loaned_customer_id()
+            customer = self.get_customer_by_id(int(customer_id))
+            customer_name = customer.get_customer_full_name()
+
+            book_id = loaned.get_loaned_book_id()
+            book = self.get_book_by_id(int(book_id))
+            book_name = book.get_book_name()
+            book_author = book.get_book_author()
+            
+            loan_date_for_change = loaned.get_loaned_loan_date()
+            loan_date = datetime.date.strftime(loan_date_for_change, "%d.%m.%Y")
+            return_date_for_change = loaned.get_loaned_return_date()
+            return_date = datetime.date.strftime(return_date_for_change, "%d.%m.%Y")
+            
+            if datetime.date.today() > return_date_for_change:
+                status = "Expired"
+            if status == "Expired":
+                print(f"| Customer: [{customer_id}] {customer_name}. | Book: [{book_id}] `{book_name}` By Author: {book_author}. | Loan Date: {loan_date}, Return Date: {return_date} | Status: {status}")
     
     # Update func`s
     
@@ -149,6 +251,15 @@ class Library:
             return True
         else:
             return False
+        
+    def delete_loan(self, return_book_id):
+        
+        loan = self._loans[return_book_id]
+        customer_id = loan.get_loaned_customer_id()
+        loan_book:list = self._loaned_books
+        self._loaned_for_customer[int(customer_id)].pop(int(return_book_id))
+        loan_book.remove(int(return_book_id))
+        self._loans.pop(int(return_book_id))
     
     # __str__ and __repr__
     
@@ -157,13 +268,12 @@ class Library:
     
     def __repr__(self):
         return self.__str__()
-     
+    
 # Main and Database system
 
 def main():
     print(visual_database_menu)
-    print(database_menu)
-    print('\n')
+    print(database_menu, "\n")
     database_menu_choose = input(enter_choose)
     
     try:
@@ -192,12 +302,10 @@ def main():
             else:
             
             
-                with open(DB_URL, "rb") as file:
-                    library:Library = pickle.load(file)
-                    file.close
-                    print(visual_space)
-                    print(f"| Welcome to {library.get_library_name()}")
-                    goto_library_menu()
+                library = Library.load_from_pickle()
+                print(visual_space)
+                print(f"| Welcome to {library.get_library_name()}")
+                goto_library_menu()
                 
         except Exception as error_message:
                 print(visual_space)
@@ -251,6 +359,7 @@ def main():
                 print(visual_space)
                 print("The Library Database file is been deleted")
                 main()
+            
             else:
                 print(visual_space)
                 print("File not found.")
@@ -285,9 +394,9 @@ def main():
 # Library Menu
 def goto_library_menu():
     print(visual_library_menu)
-    print(library_menu)
-    print('\n')
+    print(library_menu, '\n')
     library_menu_choose = input(enter_choose)
+    
     try:
         if not library_menu_choose.isdigit():
             print(visual_space)
@@ -317,37 +426,34 @@ def goto_library_menu():
         
     if library_menu_choose == "4":
         try:
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
+            print(visual_space)
+            print(visual_library_settings)
+            print(library_settings)
+            print('\n')
+            settings_menu_choose = input(enter_choose)
+            if not settings_menu_choose.isdigit():
+                print(visual_space)
+                print("You cant use digits, Only numbers!")
+                goto_library_menu()
                 
+            if settings_menu_choose not in ["1", "2", "3", "4"] :
+                print(visual_space)
+                print("You can use only displayed options")
+                goto_library_menu()
+                
+            if settings_menu_choose == "1":
                 print(visual_space)
                 print(visual_library_settings)
-                print(library_settings)
-                print('\n')
-                settings_menu_choose = input(enter_choose)
-                if not settings_menu_choose.isdigit():
+                library.get_library_full_information()
+                return_menu = input("\n| Enter [1] to return to the customer menu: ")
+                if not return_menu.isdigit():
                     print(visual_space)
-                    print("You cant use digits, Only numbers!")
+                    print("Error")
                     goto_library_menu()
-                
-                if settings_menu_choose not in ["1", "2", "3", "4"] :
+                if return_menu == "1":
                     print(visual_space)
-                    print("You can use only displayed options")
-                    goto_library_menu()
-                
-                if settings_menu_choose == "1":
-                    print(visual_space)
-                    print(visual_library_settings)
-                    library.get_library_full_information()
-                    return_menu = input("\n| Enter [1] to return to the customer menu: ")
-                    if not return_menu.isdigit():
-                        print(visual_space)
-                        print("Error")
-                        goto_library_menu()
-                    if return_menu == "1":
-                        print(visual_space)
-                        goto_library_menu()       
+                    goto_library_menu()       
                         
         except Exception as error_message:
             print(error_message)
@@ -355,10 +461,7 @@ def goto_library_menu():
             
         if settings_menu_choose == "2":
             try:
-                with open(DB_URL, "rb") as file:
-                    library:Library = pickle.load(file)
-                    file.close
-
+                library = Library.load_from_pickle()
                 print(visual_space)
                 print(visual_library_settings)
                 new_name = input("| Enter a new name for Library or Press [ENTER] for return: ")
@@ -383,9 +486,7 @@ def goto_library_menu():
                 
         if settings_menu_choose == "3":
             try:
-                with open(DB_URL, "rb") as file:
-                    library:Library = pickle.load(file)
-                    file.close
+                library = Library.load_from_pickle()
 
                 print(visual_space)
                 print(visual_library_settings)
@@ -459,7 +560,8 @@ def goto_customer_menu():
         try:
             
             library = Library.load_from_pickle()
-
+            customers_list = library.get_customers_dict()
+            print(visual_creating_customer)
             print(visual_creating_customer)
             id_of_customer = input("| Please enter ID of Customer: ")
             if not id_of_customer.isdigit():
@@ -501,6 +603,8 @@ def goto_customer_menu():
             print("Creating Customer Account...")
             time.sleep(2)            
             library.add_customer(id_of_customer, first_name_of_customer, last_name_of_customer, address_of_customer, email_of_customer, birthdate_of_customer)
+            loan_list_for_customer = library.get_loans_for_customer()
+            loan_list_for_customer[int(id_of_customer)] = []
             print(visual_space)
             print("Successful, New Customer account is been created!")
             library.save_to_picke(library)
@@ -515,9 +619,7 @@ def goto_customer_menu():
     if customer_menu_choose == "2":
         try:
              
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
             customers_list = library.get_customers_dict()
             if len(customers_list) == 0:
                 print(visual_space)
@@ -534,6 +636,11 @@ def goto_customer_menu():
                 print("Error")
                 goto_customer_menu()
             customer_id = int(customer_id)
+            loans_check = library.get_loans_for_customer()
+            if len(loans_check[customer_id]) >= 1:
+                print(visual_space)
+                print("You cant delete customer if customer not return books!")
+                goto_customer_menu()
             customer_deleted = library.delete_customer(customer_id)
             if customer_deleted == True:
                 print(visual_space)
@@ -589,9 +696,7 @@ def goto_customer_menu():
     if customer_menu_choose == "4":
         try:
             
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
             customers_list = library.get_customers_dict()
             if len(customers_list) == 0:
                 print(visual_space)
@@ -622,9 +727,7 @@ def goto_customer_menu():
     if customer_menu_choose == "5":
         try:
         
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
             customers_list = library.get_customers_dict()
             if len(customers_list) == 0:
                 print(visual_space)
@@ -697,7 +800,7 @@ def goto_book_menu():
             print("You cant use digits, Only numbers!")
             goto_book_menu()
             
-        if books_menu_choose not in ["1", "2", "3", "4", "5", "6"]:
+        if books_menu_choose not in ["1", "2", "3", "4", "5"]:
             print(visual_space)
             print("You can use only displayed options")
             goto_book_menu()
@@ -709,10 +812,8 @@ def goto_book_menu():
     if books_menu_choose == "1":
         try:
             
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
-        
+            library = Library.load_from_pickle()
+            book_list = library.get_book_dict()
             print(visual_creating_book)
             id_of_book = input("| Please enter ID of Book: ")
             if not id_of_book.isdigit():
@@ -725,6 +826,8 @@ def goto_book_menu():
                 print(visual_space)
                 print("Error, This ID is used.")
                 goto_book_menu()
+            print(visual_creating_book)
+            print(f"| Book ID: {id_of_book}")
             name_of_book = input("| Please enter Name of Book: ")
             author_name_of_book = input("| Please enter Author name of Book: ")
             publish_year_of_book = input("| Please enter the publish year of the book: ")
@@ -758,9 +861,8 @@ def goto_book_menu():
     if books_menu_choose == "2":
         try:
              
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
+            loaned_books = library.get_loaned_books()
             book_list = library.get_book_dict()
             if len(book_list) == 0:
                 print(visual_space)
@@ -777,8 +879,12 @@ def goto_book_menu():
                 print("Error")
                 goto_book_menu()
             book_id = int(book_id)
-            customer_deleted = library.delete_customer(book_id)
-            if customer_deleted == True:
+            if book_id in loaned_books:
+                print(visual_space)
+                print("You cant delete a book when him loaned!")
+                goto_book_menu()
+            book_deleted = library.delete_book(book_id)
+            if book_deleted == True:
                 print(visual_space)
                 print("Book Deleted!")
                 library.save_to_picke(library)
@@ -794,50 +900,122 @@ def goto_book_menu():
         
     if books_menu_choose == "3":
         try:
+            
+            print(visual_space)
+            print(visual_find_book)
+            print(books_find)
+            print("\n")
+            book_find_choose = input(enter_choose)
         
-            library = Library.load_from_pickle()
-            books_list = library.get_book_dict()
-            if len(books_list) == 0:
+            if not book_find_choose.isdigit():
                 print(visual_space)
-                print("No Books for display!")
-                goto_customer_menu()
-            print(visual_space)
-            print(visual_books_full)
-            book_id = input("| Enter ID to get information about the book: ")
-            if not book_id.isdigit():
+                print("You cant use digits, Only numbers!")
+                goto_book_menu()
+            
+            if book_find_choose not in ["1", "2", "3", "4"]:
                 print(visual_space)
-                print("Error")
-                goto_customer_menu()
-            book_id = int(book_id)
-            if book_id not in books_list:
+                print("You can use only displayed options")
+                goto_book_menu()
+        
+            if book_find_choose == "1":
+        
+                library = Library.load_from_pickle()
+                books_list = library.get_book_dict()
+                if len(books_list) == 0:
+                    print(visual_space)
+                    print("No Books for display!")
+                    goto_book_menu()
                 print(visual_space)
-                print("Error, ID not exist.")
-                goto_customer_menu()
-            print(visual_space)
-            print(visual_books_full)
-            library.get_book_full_info(book_id)
-            return_menu = input("\n| Enter [1] to return to the customer menu: ")
-            if not return_menu.isdigit():
+                print(visual_books_full)
+                book_id = input("| Enter ID to get information about the book: ")
+                if not book_id.isdigit():
+                    print(visual_space)
+                    print("Error")
+                    goto_book_menu()
+                book_id = int(book_id)
+                if book_id not in books_list:
+                    print(visual_space)
+                    print("Error, ID not exist.")
+                    goto_book_menu()
                 print(visual_space)
-                print("Error")
-                goto_customer_menu()
-            if return_menu == "1":
+                print(visual_books_full)
+                library.get_book_full_info(book_id)
+                return_menu = input("\n| Enter [1] to return to the book menu: ")
+                if not return_menu.isdigit():
+                    print(visual_space)
+                    print("Error")
+                    goto_book_menu()
+                if return_menu == "1":
+                    print(visual_space)
+                    goto_book_menu()
+                    
+            if book_find_choose == "2":
+                
+                    print(visual_space)
+                    print(visual_find_book)
+                    print("\n")
+                    book_name_choose = input(enter_choose)
+                    
+                    library = Library.load_from_pickle()
+                    books_list = library.get_book_dict()
+                    if len(books_list) == 0:
+                        print(visual_space)
+                        print("No Books for display!")
+                        goto_book_menu()
+                    print(visual_space)
+                    print(visual_find_book)
+                    result = library.get_book_by_name(book_name_choose)
+                    for i in result:
+                        print(i)
+                    return_menu = input("\n| Enter [1] to return to the book menu: ")
+                    if not return_menu.isdigit():
+                        print(visual_space)
+                        print("Error")
+                        goto_book_menu()
+                    if return_menu == "1":
+                        print(visual_space)
+                        goto_book_menu()
+
+                
+            if book_find_choose == "3":
                 print(visual_space)
-                goto_customer_menu()
+                print(visual_find_book)
+                print("\n")
+                book_author_choose = input(enter_choose)
+                    
+                library = Library.load_from_pickle()
+                books_list = library.get_book_dict()
+                if len(books_list) == 0:
+                    print(visual_space)
+                    print("No Books for display!")
+                    goto_book_menu()
+                print(visual_space)
+                print(visual_find_book)
+                result = library.get_book_by_author(book_author_choose)
+                for i in result:
+                    print(i)
+                return_menu = input("\n| Enter [1] to return to the book menu: ")
+                if not return_menu.isdigit():
+                    print(visual_space)
+                    print("Error")
+                    goto_book_menu()
+                if return_menu == "1":
+                    print(visual_space)
+                    goto_book_menu()
+                
+                
+            if book_find_choose == "4":
+                print(visual_space)
+                goto_book_menu()
                 
         except Exception as error_message:
             print(error_message)
-            goto_customer_menu()
-    
-    if books_menu_choose == "4":
-        pass 
+            goto_book_menu()
         
-    if books_menu_choose == "5":
+    if books_menu_choose == "4":
         try:
         
-            with open(DB_URL, "rb") as file:
-                library:Library = pickle.load(file)
-                file.close
+            library = Library.load_from_pickle()
             book_list = library.get_book_dict()
             if len(book_list) == 0:
                 print(visual_space)
@@ -894,23 +1072,23 @@ def goto_book_menu():
             print(error_message)
             goto_book_menu()
             
-    if books_menu_choose == "6":
+    if books_menu_choose == "5":
         print(visual_space)
         goto_library_menu()
         
 def goto_loan_menu():
-    print(visual_loan_menu)
-    print(loan_menu)
-    print('\n')
-    loan_menu_choose = input(enter_choose)
-    
     try:
+        print(visual_loan_menu)
+        print(loan_menu)
+        print('\n')
+        loan_menu_choose = input(enter_choose)
+    
         if not loan_menu_choose.isdigit():
             print(visual_space)
             print("You cant use digits, Only numbers!")
             goto_loan_menu()
             
-        if loan_menu_choose not in ["1", "2", "3", "4", "5", "6", "7"]:
+        if loan_menu_choose not in ["1", "2", "3", "4"]:
             print(visual_space)
             print("You can use only displayed options")
             goto_loan_menu()
@@ -923,16 +1101,26 @@ def goto_loan_menu():
         try:
             
             library = Library.load_from_pickle()
+            loan_book:list = library.get_loaned_books()
             print(visual_space)
             print(visual_creating_loan)
             
             customer_id = input("| Please enter Customer ID: ")
             customer = library.get_customer_by_id(int(customer_id))
+            loaned_customers = library.get_loans_for_customer()
+            if len(loaned_customers[int(customer_id)]) >= 3:
+                print(visual_space)
+                print("You cant take more books!")
+                goto_loan_menu()
             print(visual_space)
             print(visual_creating_loan)
             print(f"| Choosed Customer:", customer.get_customer_half_info(),"\n")
             book_id = input("| Please enter Book ID: ")
             book = library.get_book_by_id(int(book_id))
+            if int(book_id) in loan_book:
+                print(visual_space)
+                print("This book loaned now!")
+                goto_loan_menu()
             print(visual_space)
             print(visual_creating_loan)
             print(f"| Choosed Customer:", customer.get_customer_half_info())
@@ -947,27 +1135,106 @@ def goto_loan_menu():
             if book.get_book_type() == "3":
                 return_date = loan_date + datetime.timedelta(days=2)
             print(f"| Return Date:", datetime.date.strftime(return_date, "%d.%m.%Y"))
-            make_loan_choose = input(f"\n| Make new loan? [Y/N]: ")
+            loan_status = "Waiting for confirm"
+            print(f"| Loan Status: {loan_status}")
+            make_loan_choose = input(f"\n| Confirm new loan? [Y/N]: ")
             if make_loan_choose == "N" or make_loan_choose == "n":
                 print(visual_space)
-                print("Loan Making is been canceled")
+                print("Loan is been canceled!")
                 goto_loan_menu()
             if make_loan_choose == "Y" or make_loan_choose == "y":
-                pass
-
+                print(visual_space)
+                print(visual_creating_loan)
+                loan_status = "Confirmed"
+                print(f"| Choosed Customer:", customer.get_customer_half_info())
+                print(f"| Choosed Book:", book.get_book_info())
+                print(f"| Loan Date:", datetime.date.strftime(loan_date, "%d.%m.%Y"))
+                print(f"| Return Date:", datetime.date.strftime(return_date, "%d.%m.%Y"))
+                print(f"| Loan Status: {loan_status}\n")
+                print("| The loan is confirmed, Returning to Loan Menu....")
+                time.sleep(3)
+                loan_status = "Loaned"
+                library.create_loan_book(customer_id, book_id, return_date, loan_date, loan_status)
+                loan_customer = library.get_loans_for_customer()
+                loan_customer[int(customer_id)].append(int(book_id))
+                loan_book.append(int(book_id))
+                library.save_to_picke(library)
+                print(visual_space)
+                print("Loan is been confirmed!")
+                goto_loan_menu()
                 
         except Exception as error_message:
             print(error_message)
-            goto_loan_menu()    
+            goto_loan_menu()
+        
+    if loan_menu_choose == "2":
+        try:
+            
+            print(visual_space)
+            print(visual_return_loans)
+            library = Library.load_from_pickle()
+            loan_book:list = library.get_loaned_books()
+            loan_customer:dict = library.get_loans_for_customer()
+            return_book_id = input("| Please enter Book ID to return: ")
+            if not return_book_id.isdigit():
+                print(visual_space)
+                print("Enter only numbers!")
+                goto_loan_menu()
+            else:
+                return_book_id = int(return_book_id)
+                if return_book_id not in loan_book:
+                    print(visual_space)
+                    print("This book not loaned!")
+                    goto_loan_menu()
+                else:
+                    library.delete_loan(int(return_book_id))
+                    print(visual_space)
+                    print("The book is returned.")
+                    library.save_to_picke(library)
+                    goto_loan_menu()
+
+    
+        except Exception as error_message:
+            print(error_message)
+            goto_loan_menu()
             
     if loan_menu_choose == "3":
         try:
-            pass
             
+            print(visual_space)
+            print(visual_display_loans)
+            library = Library.load_from_pickle()
+            library.get_loan_logs()
+            print("\n")
+            print(display_loan_menu, "\n")
+            display_loans_choose = input(enter_choose)
+            
+            if display_loans_choose == "1":
+                print(visual_space)
+                print(visual_display_loans)
+                library.get_late_loan_logs()
+                print("\n")
+                return_menu = input("\n| Enter [1] to return to the customer menu: ")
+                if not return_menu.isdigit():
+                    print(visual_space)
+                    print("Error")
+                    goto_loan_menu()
+                if return_menu == "1":
+                    print(visual_space)
+                    goto_loan_menu()
+            
+            if display_loans_choose == "2":
+                print(visual_space)
+                goto_loan_menu()
+                
         except Exception as error_message:
             print(error_message)
-            goto_loan_menu() 
+            goto_loan_menu()
                 
+    if loan_menu_choose == "4":
+        print(visual_space)
+        goto_library_menu()
+            
 if __name__ == "__main__":
-    print(visual_space)
+    print(visual_space) 
     main()

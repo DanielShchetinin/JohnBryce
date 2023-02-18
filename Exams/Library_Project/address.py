@@ -3,7 +3,7 @@ from visual_params import visual_space
 class Address:
 
     
-    def __init__(self, country: str, city: str, street: str, building_number: int, enterance: int = None, floor: int = None, index: int = None):
+    def __init__(self, country: str, city: str, street: str, building_number: int):
         
         self._country = country
         self._city = city
@@ -36,10 +36,6 @@ class Address:
             city = input("| Please enter a city: ")
             street = input("| Please enter a street: ")
             building_number = input("| Please enter a buliding number: ")
-            print("\n| Optional parameters: ")
-            enterance = input("| Please enter a buliding enterance: ")
-            floor = input("| Please enter a buliding floor: ")
-            index = input("| Please enter a index: ")
             
             if floor == "" or floor == " ":
                 floor = None
@@ -52,7 +48,7 @@ class Address:
             print(visual_space)
             print(error_message)
 
-        address_for_use = Address(country, city, street, building_number, enterance, floor, index)
+        address_for_use = Address(country, city, street, building_number)
         return address_for_use
     
     def __str__(self):
