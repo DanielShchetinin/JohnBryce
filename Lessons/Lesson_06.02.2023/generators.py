@@ -1,4 +1,9 @@
+num = 10
+
 def my_gen():
+    global num
+    num += 1
+    
     n = 1
     print("This is printed first")
     yield n
@@ -13,15 +18,9 @@ def my_gen():
     yield n
     
     
-
+#check
 if __name__ == '__main__':
-    a = my_gen()
+    for i in my_gen():
+        print(i)
     
-    val1 = next(a)
-    print(val1)
-    
-    val1 = next(a)
-    print(val1)
-    
-    val1 = next(a)
-    print(val1)
+    print(num)
