@@ -24,6 +24,3 @@
 #         print(i)
     
 #     print(num)
-    
-    
-def my_range(end):
