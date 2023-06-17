@@ -22,7 +22,7 @@
 # if __name__ == '__main__':
 #     for i in my_gen():
 #         print(i)
-    123
+    
 #     print(num)
     
     
