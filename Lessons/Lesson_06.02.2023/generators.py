@@ -27,5 +27,4 @@
     
     
 def my_range(end):
-    i = 1
-    yield i
+    
