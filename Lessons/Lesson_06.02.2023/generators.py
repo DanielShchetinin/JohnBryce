@@ -23,8 +23,4 @@
 #     for i in my_gen():
 #         print(i)
     
-#     print(num)
-    
-    
-def my_range(end):
-    
+#     print(num) 
