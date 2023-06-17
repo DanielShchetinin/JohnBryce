@@ -10,7 +10,7 @@ from exceptions import *
 from loan import Loan
 from visual_params import *
 
-DB_URL = "Projects_and_Exams\Library_Project\library.py"
+DB_URL = "..\\library_database.pickle"
 
 class Library:
     
