@@ -3,7 +3,7 @@ from shapes.calc import *
 
 def main():
 
-    lengths_sides_list = [2,2,2]
+    lengths_sides_list = [2,5,5]
     result_is_rectangle = is_rectangle(lengths_sides_list)
     result_is_square = is_square(lengths_sides_list)
     result_is_triangle = is_triangle(lengths_sides_list)
